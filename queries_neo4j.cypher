@@ -6,12 +6,11 @@ ORDER BY num_films DESC;
 
 
 ##actor productivity
-MATCH (a1:Actor)-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(a2:Actor)
-WHERE a1.actor_id < a2.actor_id
-WITH a1, a2, COUNT(DISTINCT m) as movies_together
-RETURN a1.name as actor1, a2.name as actor2, movies_together
-ORDER BY movies_together DESC
-LIMIT 20;
+MATCH (a:Actor)-[:ACTED_IN]->(m:Movie) 
+WITH a, COUNT(DISTINCT m) as films 
+RETURN a.name, films 
+ORDER BY films DESC 
+LIMIT 20
 
 
 ## Actor collaboration pairs
