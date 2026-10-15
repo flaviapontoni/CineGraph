@@ -50,10 +50,17 @@ LIMIT 20;
 
 
 ##community detection
-MATCH (a1:Actor)-[:ACTED_IN]->(m1:Movie)<-[:ACTED_IN]-(a2:Actor),
-      (a2)-[:ACTED_IN]->(m2:Movie)<-[:ACTED_IN]-(a3:Actor),
-      (a1)-[:ACTED_IN]->(m3:Movie)<-[:ACTED_IN]-(a3)
-WHERE a1.actor_id < a2.actor_id < a3.actor_id
-  AND m1 <> m2 AND m2 <> m3 AND m1 <> m3
-RETURN DISTINCT a1.name as actor1, a2.name as actor2, a3.name as actor3
-LIMIT 20;
+MATCH (a:Actor)-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(b:Actor)
+WHERE a.actor_id < b.actor_id
+WITH a, b, COUNT(DISTINCT m) AS ab
+WHERE ab >= 5
+MATCH (b)-[:ACTED_IN]->(m2:Movie)<-[:ACTED_IN]-(c:Actor)
+WHERE b.actor_id < c.actor_id
+WITH a, b, c, COUNT(DISTINCT m2) AS bc
+WHERE bc >= 5
+MATCH (a)-[:ACTED_IN]->(m3:Movie)<-[:ACTED_IN]-(c)
+WHERE a.actor_id < c.actor_id
+WITH a, b, c, COUNT(DISTINCT m3) AS ac
+WHERE ac >= 5
+RETURN a.name, b.name, c.name
+LIMIT 20
